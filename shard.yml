@@ -1,0 +1,19 @@
+name: kemal_jwt_auth
+version: 0.1.0
+
+authors:
+  - D. Scott Boggs <scott@tams.tech>
+
+dependencies:
+  jwt:
+    github: crystal-community/jwt
+  kemal:
+    github: kemalcr/kemal
+
+development_dependencies:
+  scrypt:
+    github: ysbaddaden/scrypt-crystal
+
+crystal: 0.27.2
+
+license: MIT
