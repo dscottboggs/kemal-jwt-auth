@@ -1,6 +1,33 @@
-# kemal_jwt_auth
+# Kemal JWT Authentication
 
-TODO: Write a description here
+Drop-in authentication middleware for [Kemal](http://kemalcr.com/), independent
+of user model. See [example.cr](https://github.com/dscottboggs/kemal-jwt-auth/blob/master/example/example.cr)
+for a full example.
+
+### TL;DR:
+
+```crystal
+require "kemal"
+require "kemal_jwt_auth"
+
+add_handler KemalJWTAuth::Handler(UserCollectionType, YourUserType).new users: collection
+
+get "/test" do |context|
+  if user = context.current_user?
+    "Welcome, #{user}!"
+  else
+    "no user found"
+  end
+end
+
+Kemal.run
+```
+
+## JavaScript companion
+
+There is a JavaScript companion library to make using this library with an SPA
+or other JavaScript client a cinch. See [the client repository](https://github.com/dscottboggs/kemal-jwt-auth-companion)
+for more information
 
 ## Installation
 
@@ -13,18 +40,6 @@ TODO: Write a description here
    ```
 
 2. Run `shards install`
-
-## Usage
-
-```crystal
-require "kemal_jwt_auth"
-```
-
-TODO: Write usage instructions here
-
-## Development
-
-TODO: Write development instructions here
 
 ## Contributing
 
