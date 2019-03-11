@@ -4,7 +4,7 @@ require "../src/kemal_jwt_auth"
 require "logger"
 require "scrypt"
 
-struct ExampleUser < User
+struct ExampleUser
   include JSON::Serializable
   property name : String
   property hashed_pw : Scrypt::Password
@@ -17,7 +17,7 @@ struct ExampleUser < User
   end
 end
 
-struct UserData < UsersCollection(ExampleUser)
+struct UserData
   @internal = [] of ExampleUser
 
   def initialize(users @internal); end

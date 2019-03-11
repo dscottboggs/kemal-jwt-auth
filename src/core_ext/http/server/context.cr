@@ -1,4 +1,4 @@
-require "../../../user"
+require "../../../kemal_jwt_auth"
 
 class HTTP::Server
   class Context
