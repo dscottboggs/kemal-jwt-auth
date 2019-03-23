@@ -84,7 +84,7 @@ class KemalJWTAuth::Handler(UsersCollection, User) < Kemal::Handler
     {uh, header}
   end
 
-  private macro send_json(data)
+  macro send_json(data)
     context.response.content_type = "application/json"
     context.response.print({{data}}.to_json)
     context.response.flush
