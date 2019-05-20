@@ -18,13 +18,17 @@ struct ExampleUser
 end
 
 struct UserData
-  @internal = [] of ExampleUser
+  include KemalJWTAuth::UsersCollection
+  @internal : Array(ExampleUser)
 
-  def initialize(users @internal); end
+  def initialize(users @internal : Array(ExampleUser)); end
 
   def self.from_json(data) : self
-    @internal.from_json data
+    new users: Array(ExampleUser).from_json data
   end
+
+  delegate :to_json, to: @internal
+  forward_missing_to @internal
 
   def find_and_authenticate!(from data) : ExampleUser?
     user = Hash(String, String).from_json data
