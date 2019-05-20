@@ -1,6 +1,6 @@
 require "./spec_helper"
 
-class KemalJWTAuth::Handler(UsersCollection, User) < Kemal::Handler
+class KemalJWTAuth::Handler < Kemal::Handler
   {% for method in @type.methods
                      .select { |m| m.visibility == :private }
                      .reject { |m| m.name.ends_with? '=' } %}
@@ -24,12 +24,12 @@ end
 
 describe KemalJWTAuth do
   it "initializes properly" do
-    instance = KemalJWTAuth::Handler(UserData, ExampleUser).new MockData
-    instance.users.@internal.map { |u| u.name }.should eq MockData.@internal.map { |u| u.name }
+    instance = KemalJWTAuth::Handler.new MockData
+    instance.users.map { |u| u.name }.should eq MockData.map { |u| u.name }
   end
   describe "the sign-in process" do
     it "works" do
-      instance = KemalJWTAuth::Handler(UserData, ExampleUser).new MockData
+      instance = KemalJWTAuth::Handler.new MockData
       response_storage = IO::Memory.new
       request = HTTP::Request.new "POST", "/sign_in", body: SignInData.to_json
       response = HTTP::Server::Response.new response_storage
@@ -46,7 +46,7 @@ describe KemalJWTAuth do
       response_data.errors.empty?.should be_true
     end
     it "denies a bad request" do
-      instance = KemalJWTAuth::Handler(UserData, ExampleUser).new MockData
+      instance = KemalJWTAuth::Handler.new MockData
       response_storage = IO::Memory.new
       request = HTTP::Request.new "POST", "/sign_in", body: "not JSON at all!"
       response = HTTP::Server::Response.new response_storage
@@ -58,7 +58,7 @@ describe KemalJWTAuth do
       response_data.errors.first?.should eq "Bad request."
     end
     it "denies bad authorization" do
-      instance = KemalJWTAuth::Handler(UserData, ExampleUser).new MockData
+      instance = KemalJWTAuth::Handler.new MockData
       response_storage = IO::Memory.new
       request = HTTP::Request.new "POST", "/sign_in", body: {name: "test user", auth: "not the actual password"}.to_json
       response = HTTP::Server::Response.new response_storage
@@ -72,7 +72,7 @@ describe KemalJWTAuth do
   end
   describe "#encode and #decode" do
     it "works" do
-      instance = KemalJWTAuth::Handler(UserData, ExampleUser).new MockData
+      instance = KemalJWTAuth::Handler.new MockData
       instance._test__decode(
         instance._test__encode(MockData.@internal.first.to_h)
       )[0].should eq MockData.@internal.first.to_h
@@ -80,7 +80,7 @@ describe KemalJWTAuth do
   end
   describe "the reauthentication process" do
     it "loads from a header" do
-      instance = KemalJWTAuth::Handler(UserData, ExampleUser).new MockData
+      instance = KemalJWTAuth::Handler.new MockData
 
       user_info = HTTP::Headers.new
       user_info["X-Token"] = instance._test__encode(MockData.@internal.first.to_h)
@@ -95,7 +95,7 @@ describe KemalJWTAuth do
       context.current_user["expiry"].as(Int32).should be_close((Time.now + 1.week).to_unix.to_i, 1)
     end
     it "loads from a query parameter" do
-      instance = KemalJWTAuth::Handler(UserData, ExampleUser).new MockData
+      instance = KemalJWTAuth::Handler.new MockData
 
       request = HTTP::Request.new "POST", "/sign_in?auth=#{instance._test__encode(MockData.@internal.first.to_h)}"
       response_storage = IO::Memory.new
@@ -107,7 +107,7 @@ describe KemalJWTAuth do
       context.current_user["expiry"].as(Int32).should be_close((Time.now + 1.week).to_unix.to_i, 1)
     end
     it "throws a JWT::Error on an invalid JWT" do
-      instance = KemalJWTAuth::Handler(UserData, ExampleUser).new MockData
+      instance = KemalJWTAuth::Handler.new MockData
 
       request = HTTP::Request.new "POST", "/sign_in?auth=some-nonsense"
       response_storage = IO::Memory.new
