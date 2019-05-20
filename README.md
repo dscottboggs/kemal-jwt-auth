@@ -9,8 +9,13 @@ for a full example.
 ```crystal
 require "kemal"
 require "kemal_jwt_auth"
+# you can use your existing users collection data-structure.
+require "./my_users"
 
-add_handler KemalJWTAuth::Handler(UserCollectionType, YourUserType).new users: collection
+# Your `MyUsers` must include the `KemalJWTAuth::UsersCollection` module
+collection = MyUsers.default_config
+
+add_handler KemalJWTAuth::Handler.new users: collection
 
 get "/test" do |context|
   if user = context.current_user?
@@ -36,14 +41,15 @@ for more information
    ```yaml
    dependencies:
      kemal_jwt_auth:
-       github: your-github-user/kemal_jwt_auth
+       github: dscottboggs/kemal_jwt_auth
+       version: ~> 1.0
    ```
 
 2. Run `shards install`
 
 ## Contributing
 
-1. Fork it (<https://github.com/your-github-user/kemal_jwt_auth/fork>)
+1. Fork it (<https://github.com/dscottboggs/kemal_jwt_auth/fork>)
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
@@ -51,4 +57,4 @@ for more information
 
 ## Contributors
 
-- [D. Scott Boggs](https://github.com/your-github-user) - creator and maintainer
+- [D. Scott Boggs](https://github.com/dscottboggs) - creator and maintainer
