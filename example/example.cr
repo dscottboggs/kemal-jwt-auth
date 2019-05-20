@@ -16,6 +16,8 @@ struct ExampleUser
   def initialize(@name, @hashed_pw)
   end
 
+  # This is the format stored in the JWT for later retrieval -- it is a limited
+  # subset of JSON. See the definition of the `UserHash` type.
   def to_h : UserHash
     UserHash{"name" => @name, "expiry" => (Time.now + 1.week).to_unix.to_i}
   end
@@ -26,13 +28,17 @@ end
 # described  above) if authentication is successful. It should return nil if
 # the user is not found or if authentication fails.
 struct UserData
-  @internal = [] of ExampleUser
+  include KemalJWTAuth::UsersCollection
+  @internal : Array(ExampleUser)
 
-  def initialize(users @internal); end
+  def initialize(users @internal : Array(ExampleUser)); end
 
   def self.from_json(data) : self
-    @internal.from_json data
+    new users: Array(ExampleUser).from_json data
   end
+
+  delegate :to_json, to: @internal
+  forward_missing_to @internal
 
   def find_and_authenticate!(from data) : ExampleUser?
     # read in the user from the given request body
@@ -40,7 +46,7 @@ struct UserData
     # check for the user in the list of users, storing it in `found`
     if (found = @internal.find { |u| u.name == user["name"]? }) &&
        (found_pw = user["auth"]?) # check for the auth token, storing it in `found_pw`
-      return found if found.hashed_pw == found_pw
+      return found if found.hashed_pw =~ found_pw
       # return the found user, but    ^^ only if the password matches!
     end
   end
@@ -52,16 +58,13 @@ MockData = UserData.new(users: [
     hashed_pw: Scrypt::Password.create("test user password")),
 ])
 
-# In order to instantiate an instance of the handler, you have to give it the
-# types of your User and a UserCollection type; then you have to give it the
-# concrete user collection object.
-add_handler KemalJWTAuth::Handler(UserData, ExampleUser).new users: MockData
+add_handler KemalJWTAuth::Handler.new users: MockData
 
 get "/test" do |context|
   # once you do that, you can access the information from the #to_h method on a
   # user in a Kemal context, like so:
   if user = context.current_user?
-    "Welcome, #{user}!"
+    "Welcome, #{user["name"]?}!"
   else
     "no user found"
   end

@@ -1,9 +1,10 @@
 require "jwt"
 require "kemal"
 require "logger"
+require "./users_collection"
 
 # JWT authorization middleware
-class KemalJWTAuth::Handler(UsersCollection, User) < Kemal::Handler
+class KemalJWTAuth::Handler < Kemal::Handler
   # Used to encrypt all JWTs
   private property secret_key : String
   @logger : Logger
