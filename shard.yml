@@ -12,7 +12,8 @@ dependencies:
 
 development_dependencies:
   scrypt:
-    github: ysbaddaden/scrypt-crystal
+    github: dscottboggs/scrypt-crystal
+    branch: feature/comparison
 
 crystal: 0.27.2
 

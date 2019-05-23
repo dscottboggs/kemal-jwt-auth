@@ -19,7 +19,7 @@ end
 SignInData = {name: "test user", auth: "test user password"}
 
 def json_body_in(http response : String)
-  response.split("\r\n").select { |line| line[0]? == '{' }.first
+  response.split("\r\n").find { |line| line[0]? == '{' }.not_nil!
 end
 
 describe KemalJWTAuth do

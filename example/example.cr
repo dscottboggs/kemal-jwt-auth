@@ -46,7 +46,7 @@ struct UserData
     # check for the user in the list of users, storing it in `found`
     if (found = @internal.find { |u| u.name == user["name"]? }) &&
        (found_pw = user["auth"]?) # check for the auth token, storing it in `found_pw`
-      return found if found.hashed_pw =~ found_pw
+      return found if found.hashed_pw.verify found_pw
       # return the found user, but    ^^ only if the password matches!
     end
   end

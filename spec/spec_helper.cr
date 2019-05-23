@@ -35,7 +35,7 @@ struct UserData
     pp! user
     if (found = @internal.find { |u| u.name == user["name"]? }) &&
        (found_pw = user["auth"]?)
-      return found if found.hashed_pw == found_pw
+      return found if found.hashed_pw.verify found_pw
     end
   end
 end
