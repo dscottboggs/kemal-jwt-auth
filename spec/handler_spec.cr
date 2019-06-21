@@ -47,6 +47,7 @@ describe KemalJWTAuth do
     end
     it "denies a bad request" do
       instance = KemalJWTAuth::Handler.new MockData
+      instance.logger = Logger.new File.open(File::NULL, "w")
       response_storage = IO::Memory.new
       request = HTTP::Request.new "POST", "/sign_in", body: "not JSON at all!"
       response = HTTP::Server::Response.new response_storage

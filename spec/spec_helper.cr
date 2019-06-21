@@ -32,7 +32,6 @@ struct UserData
 
   def find_and_authenticate!(from data) : ExampleUser?
     user = Hash(String, String).from_json data
-    pp! user
     if (found = @internal.find { |u| u.name == user["name"]? }) &&
        (found_pw = user["auth"]?)
       return found if found.hashed_pw.verify found_pw
